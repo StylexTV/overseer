@@ -16,8 +16,10 @@ public class Command {
 		this.name = name;
 	}
 	
-	public void addExecutor(CommandPreset preset, CommandExecutor executor) {
+	public Command addExecutor(CommandPreset preset, CommandExecutor executor) {
 		executors.put(preset, executor);
+		
+		return this;
 	}
 	
 	public boolean parseMessage(CommandMessage message) {

@@ -1,28 +1,38 @@
 package net.overseer;
 
-import net.overseer.command.Command;
+import net.overseer.command.CommandParser;
 import net.overseer.command.CommandPreset;
 
 public class Overseer {
 	
 	public static void main(String[] args) {
-		Command command = new Command("goto");
+		CommandParser parser = new CommandParser();
 		
-		addExecutor(CommandPreset.ONE_INTEGER, (message, arguments) -> {
-			
-			int x = (int) arguments.first();
-			
-			System.out.println("Going to " + x);
-			
-		});
+		parser.addCommand("goto")
+				.addExecutor(CommandPreset.ONE_INTEGER, (message, arguments) -> {
+					
+					int x = (int) arguments.first();
+					
+					System.out.println("Going to " + x);
+					
+				})
+				.addExecutor(CommandPreset.EMPTY, (message, arguments) -> {
+					
+					int defaultValue = 100;
+					
+					message.forwardTo(CommandPreset.ONE_INTEGER, defaultValue);
+					
+				});
 		
-		addExecutor(CommandPreset.EMPTY, (message, arguments) -> {
+		try {
 			
-			message.forwardTo(CommandPreset.ONE_INTEGER, DEFAULT_DISTANCE);
+			parser.parseMessage("/goto");
 			
-		});
-		
-		command.addExecutor(CommandPreset.ONE_INTEGER);
+		} catch(Exception exception) {
+			
+			System.err.println("An exception occured: " + exception);
+			
+		}
 	}
 	
 }

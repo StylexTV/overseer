@@ -21,23 +21,28 @@ public class CommandParser {
 		this.commandPrefix = commandPrefix;
 	}
 	
-	public void parseMessage(String message) {
-		if(!isCommandMessage(message)) throw;
+	public Command addCommand(String name) {
+		Command command = new Command(name);
 		
-		message = message.substring(COMMAND_PREFIX_LENGTH);
+		return addCommand(command);
+	}
+	
+	public Command addCommand(Command command) {
+		String name = command.getName();
 		
-		LogUtil.log(Formatting.WHITE + "> %s", message);
+		commands.put(name, command);
+		
+		return command;
+	}
+	
+	public void parseMessage(String message) throws Exception {
+		message = trimCommandPrefix(message);
 		
 		String name = StringUtil.firstWord(message);
 		
 		Command command = getCommand(name);
 		
-		if(command == null) {
-			
-			LogUtil.logError("Command not found!");
-			
-			return;
-		}
+		if(command == null) throw new RuntimeException("");
 		
 		message = StringUtil.trimFirstWord(message);
 		
@@ -52,9 +57,15 @@ public class CommandParser {
 			Exception exception = m.getException();
 			
 			throw exception;
-			
-			LogUtil.logError("Command exception occured: %s", exception);
 		}
+	}
+	
+	public String trimCommandPrefix(String message) {
+		if(!isCommandMessage(message)) throw new RuntimeException("");
+		
+		int length = commandPrefix.length();
+		
+		return message.substring(length);
 	}
 	
 	public boolean isCommandMessage(String message) {
